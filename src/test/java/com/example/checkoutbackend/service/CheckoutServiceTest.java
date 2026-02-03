@@ -64,17 +64,17 @@ public class CheckoutServiceTest {
         
         when(shippingService.calculateCost(any())).thenReturn(new BigDecimal("10.00"));
 
-        PaymentMethod pm = new PaymentMethod(1L, "Cash", PaymentMethodType.CASH, new BigDecimal("0.15"));
-        when(paymentMethodRepository.findByType(PaymentMethodType.CASH)).thenReturn(Optional.of(pm));
+        PaymentMethod pm = new PaymentMethod(2L, "Debit Card", PaymentMethodType.DEBIT, new BigDecimal("0.10"));
+        when(paymentMethodRepository.findByType(PaymentMethodType.DEBIT)).thenReturn(Optional.of(pm));
 
-        CheckoutResult result = checkoutService.processCheckout(items, null, "CASH");
+        CheckoutResult result = checkoutService.processCheckout(items, null, "DEBIT");
 
         assertEquals(0, new BigDecimal("1000").compareTo(result.getSubtotal()));
         assertEquals(0, new BigDecimal("200").compareTo(result.getProductDiscount()));
         assertEquals(0, new BigDecimal("100").compareTo(result.getPromotionalDiscount()));
         assertEquals(0, new BigDecimal("10").compareTo(result.getShippingCost()));
-        assertEquals(0, new BigDecimal("107").compareTo(result.getPaymentDiscount()));
-        assertEquals(0, new BigDecimal("603").compareTo(result.getTotal()));
+        assertEquals(0, new BigDecimal("71").compareTo(result.getPaymentDiscount()));
+        assertEquals(0, new BigDecimal("639").compareTo(result.getTotal()));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class CheckoutServiceTest {
         when(shippingService.calculateCost(any())).thenReturn(BigDecimal.ZERO);
         when(paymentMethodRepository.findByType(any())).thenReturn(Optional.empty());
 
-        CheckoutResult result = checkoutService.processCheckout(items, null, "CASH");
+        CheckoutResult result = checkoutService.processCheckout(items, null, "DEBIT");
 
         assertEquals(0, BigDecimal.ZERO.compareTo(result.getPromotionalDiscount()));
         assertEquals(0, new BigDecimal("1000").compareTo(result.getTotal()));
@@ -133,7 +133,7 @@ public class CheckoutServiceTest {
         List<CartItem> items = List.of(item);
 
         org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            checkoutService.processCheckout(items, null, "CASH");
+            checkoutService.processCheckout(items, null, "DEBIT");
         });
     }
 

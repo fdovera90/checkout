@@ -85,9 +85,10 @@ El proyecto utiliza una base de datos en memoria que se pre-carga automáticamen
 
 ## API Endpoints
 
-### POST /checkout
+El sistema provee una API REST completa para que el frontend pueda consultar datos dinámicos y procesar compras.
 
-Procesa un checkout con items del carrito, dirección de envío y método de pago.
+### 1. POST /checkout
+Procesa un checkout calculando todos los descuentos y costos de envío. Es el corazón del sistema.
 
 **Request Body:**
 ```json
@@ -99,7 +100,7 @@ Procesa un checkout con items del carrito, dirección de envío y método de pag
   ],
   "shippingAddress": {
     "street": "Av. Falsa 123",
-    "city": "Ciudad",
+    "city": "Santiago",
     "zoneId": "zone-1"
   },
   "paymentMethod": "DEBIT"
@@ -109,39 +110,28 @@ Procesa un checkout con items del carrito, dirección de envío y método de pag
 **Response (200 OK):**
 ```json
 {
-  "subtotal": 1180.00,
+  "subtotal": 1100.00,
   "productDiscount": 200.00,
   "promotionalDiscount": 0.00,
   "shippingCost": 10.00,
-  "paymentDiscount": 99.00,
-  "total": 891.00
+  "paymentDiscount": 91.00,
+  "total": 819.00
 }
 ```
 
-**Response (400 Bad Request):**
-```json
-{
-  "error": "Invalid payment method: ABC"
-}
-```
+### 2. GET /products
+Obtiene el catálogo completo de productos con sus precios y descuentos base. Usado por el frontend para renderizar las tarjetas de productos.
 
-```json
-{
-  "error": "Product not found: p-999"
-}
-```
+### 3. GET /payment-methods
+Retorna la lista de métodos de pago disponibles (Efectivo, Débito, Crédito) junto con sus porcentajes de descuento. Permite que el selector del checkout sea dinámico.
 
-```json
-{
-  "error": "Invalid shipping zone: zone-999"
-}
-```
+### 4. GET /shipping-zones
+Retorna el mapa de zonas de envío soportadas. El frontend usa esto para llenar el selector de ubicación en el header.
 
 ## Métodos de Pago Válidos
 
-- `CASH` - Efectivo (15% descuento)
 - `DEBIT` - Débito (10% descuento)
-- `CREDIT_CARD` - Tarjeta de crédito (0% descuento)
+- `CREDIT_CARD` - Tarjeta de crédito (5% descuento)
 
 ## Zonas de Envío Válidas
 
