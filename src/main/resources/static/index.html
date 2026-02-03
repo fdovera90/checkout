@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mundo Lider - Checkout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f8;
+        }
+
+        .bg-lider-blue {
+            background-color: #0071ce;
+        }
+
+        .text-lider-blue {
+            color: #0071ce;
+        }
+
+        .bg-lider-yellow {
+            background-color: #ffc220;
+        }
+
+        .border-lider-blue {
+            border-color: #0071ce;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-lider-blue text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="text-3xl font-bold flex items-center">
+                    <span class="text-lider-yellow mr-2">☀️</span> Mundo Lider
+                </div>
+                <div class="hidden md:flex bg-white rounded-full px-4 py-2 w-96 items-center">
+                    <input type="text" placeholder="Buscar en Mundo Lider" class="text-gray-600 outline-none w-full">
+                    <button class="bg-lider-yellow text-white p-2 rounded-full ml-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="flex items-center space-x-6">
+                <!-- Shipping Zone Selector -->
+                <div class="hidden lg:flex items-center bg-blue-800 rounded-full px-4 py-2 border border-blue-400">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <select id="shipping-zone-header"
+                        class="bg-transparent text-sm font-bold outline-none cursor-pointer">
+                        <option value="" class="text-gray-800">Seleccionar Zona</option>
+                        <!-- Zones will be loaded here -->
+                    </select>
+                </div>
+
+                <div class="relative cursor-pointer">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
+                        </path>
+                    </svg>
+                    <span id="cart-count"
+                        class="absolute -top-2 -right-2 bg-lider-yellow text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </div>
+                <div class="font-medium text-sm hidden sm:block">
+                    $ <span id="header-total">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Products Grid -->
+        <div class="lg:col-span-2">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Nuestra Selección</h2>
+            <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Products will be loaded here -->
+                <div class="animate-pulse bg-white p-4 rounded-xl shadow-sm border h-64"></div>
+                <div class="animate-pulse bg-white p-4 rounded-xl shadow-sm border h-64"></div>
+                <div class="animate-pulse bg-white p-4 rounded-xl shadow-sm border h-64"></div>
+            </div>
+        </div>
+
+        <!-- Checkout Summary -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-2xl shadow-lg border p-6 sticky top-24">
+                <h3 class="text-xl font-bold mb-6 text-gray-800 border-b pb-4">Resumen de tu pedido</h3>
+
+                <div class="space-y-4 mb-8">
+                    <div class="flex justify-between text-gray-600">
+                        <span id="summary-items-count">Productos (0)</span>
+                        <span id="summary-subtotal" class="font-medium">$0</span>
+                    </div>
+                    <div id="row-product-discount" class="flex justify-between text-green-600 hidden">
+                        <span>Descuento productos</span>
+                        <span id="summary-product-discount" class="font-bold">-$0</span>
+                    </div>
+                    <div id="row-promo-discount" class="flex justify-between text-green-600 hidden">
+                        <span>Descuento promocional</span>
+                        <span id="summary-promo-discount" class="font-bold">-$0</span>
+                    </div>
+                    <div class="flex justify-between text-gray-800 pt-4 border-t">
+                        <span class="font-bold text-lg">Subtotal</span>
+                        <span id="summary-net-subtotal" class="font-bold text-lg">$0</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>Costo de envío</span>
+                        <span id="summary-shipping" class="font-medium">Sin costo</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4 pt-6 border-t border-dashed">
+                    <div class="flex justify-between text-gray-900">
+                        <span class="font-extrabold text-xl">Total estimado</span>
+                        <span id="summary-total" class="font-extrabold text-xl text-lider-blue">$0</span>
+                    </div>
+
+                    <div class="mt-6">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Método de pago</label>
+                        <select id="payment-method-select"
+                            class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-lider-blue focus:outline-none cursor-pointer">
+                            <!-- Payment methods will be loaded here -->
+                        </select>
+                        <div id="row-payment-discount" class="mt-3 text-lider-blue font-bold text-sm hidden">
+                            Pagando con <span id="payment-type-label">Debito</span>: <span id="summary-payment-discount"
+                                class="ml-2">-$0</span>
+                        </div>
+                    </div>
+
+                    <button id="btn-pay" onclick="processPayment()"
+                        class="w-full bg-lider-blue hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition duration-200 mt-6 transform active:scale-95 flex items-center justify-center space-x-2">
+                        <span id="btn-text">Pagar ahora</span>
+                        <div id="btn-loader" class="hidden">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                        </div>
+                    </button>
+
+                    <p class="text-xs text-gray-400 text-center mt-4">Impuestos incluidos, donde aplique.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success Toast -->
+    <div id="success-toast"
+        class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 transition-all duration-500 opacity-0 translate-y-10 pointer-events-none z-[100]">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span class="font-bold text-lg">¡Pago realizado con éxito!</span>
+    </div>
+
+    <script>
+        let cart = [];
+        let products = [];
+        let paymentMethods = [];
+        let shippingZones = [];
+
+        async function init() {
+            await Promise.all([loadProducts(), loadPaymentMethods(), loadShippingZones()]);
+            renderProducts();
+            renderPaymentMethods();
+            renderShippingZones();
+            validatePaymentButton();
+        }
+
+        async function loadProducts() {
+            const res = await fetch('/products');
+            products = await res.json();
+        }
+
+        async function loadPaymentMethods() {
+            const res = await fetch('/payment-methods');
+            paymentMethods = await res.json();
+        }
+
+        async function loadShippingZones() {
+            const res = await fetch('/shipping-zones');
+            shippingZones = await res.json();
+        }
+
+        function renderShippingZones() {
+            const select = document.getElementById('shipping-zone-header');
+            let options = '<option value="" class="text-gray-800">Seleccionar Zona</option>';
+            for (const [id, name] of Object.entries(shippingZones)) {
+                options += `<option value="${id}" class="text-gray-800">${name}</option>`;
+            }
+            select.innerHTML = options;
+            select.addEventListener('change', () => {
+                calculateCheckout();
+                validatePaymentButton();
+            });
+        }
+
+        function validatePaymentButton() {
+            const btn = document.getElementById('btn-pay');
+            const zone = document.getElementById('shipping-zone-header').value;
+            const hasItems = cart.reduce((acc, curr) => acc + curr.quantity, 0) > 0;
+
+            if (zone && hasItems) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.classList.add('hover:bg-blue-700', 'active:scale-95');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btn.classList.remove('hover:bg-blue-700', 'active:scale-95');
+            }
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = products.map(p => {
+                const cartItem = cart.find(item => item.sku === p.sku);
+                const quantity = cartItem ? cartItem.quantity : 0;
+
+                return `
+                <div class="bg-white p-5 rounded-2xl shadow-sm border hover:shadow-xl transition duration-300 flex flex-col h-full group">
+                    <div class="w-full h-40 bg-gray-100 rounded-xl mb-4 flex items-center justify-center overflow-hidden">
+                        <img src="/images/${p.sku}.png" alt="${p.name}" class="group-hover:scale-110 transition duration-500 object-contain h-full w-full" onerror="this.src='https://via.placeholder.com/200x150?text=${p.name}'">
+                    </div>
+                    <div class="flex-grow">
+                        <span class="bg-gray-100 text-gray-400 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">${p.category}</span>
+                        <h3 class="font-bold text-gray-800 mt-2 line-clamp-2">${p.name}</h3>
+                        <p class="text-xs text-gray-400 mt-1">SKU: ${p.sku}</p>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between pt-4 border-t border-gray-50">
+                        <span class="text-xl font-extrabold text-gray-900">$${p.price.toLocaleString('es-CL')}</span>
+                        <div class="flex items-center space-x-2">
+                            ${quantity > 0 ? `
+                                <button onclick="removeFromCart('${p.sku}')" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transform transition active:scale-90 shadow-sm">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path></svg>
+                                </button>
+                                <span class="font-bold text-gray-700 w-4 text-center">${quantity}</span>
+                            ` : ''}
+                            <button onclick="addToCart('${p.sku}')" class="bg-lider-blue text-white p-2 rounded-full hover:bg-blue-700 transform transition active:scale-90 shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        function renderPaymentMethods() {
+            const select = document.getElementById('payment-method-select');
+            const translationMap = {
+                'CASH': 'Efectivo',
+                'DEBIT': 'Tarjeta de Débito',
+                'CREDIT_CARD': 'Tarjeta de Crédito'
+            };
+
+            select.innerHTML = paymentMethods.map(pm => `
+                <option value="${pm.type}">${translationMap[pm.type] || pm.name} (${(pm.discount * 100).toFixed(0)}% dscto.)</option>
+            `).join('');
+
+            select.addEventListener('change', calculateCheckout);
+        }
+
+        function addToCart(sku) {
+            const existing = cart.find(item => item.sku === sku);
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({ sku, quantity: 1 });
+            }
+            renderProducts();
+            calculateCheckout();
+            validatePaymentButton();
+        }
+
+        function removeFromCart(sku) {
+            const index = cart.findIndex(item => item.sku === sku);
+            if (index > -1) {
+                if (cart[index].quantity > 1) {
+                    cart[index].quantity--;
+                } else {
+                    cart.splice(index, 1);
+                }
+            }
+            renderProducts();
+            calculateCheckout();
+            validatePaymentButton();
+        }
+
+        async function processPayment() {
+            const btn = document.getElementById('btn-pay');
+            const btnText = document.getElementById('btn-text');
+            const loader = document.getElementById('btn-loader');
+
+            // Start Loading
+            btn.disabled = true;
+            btnText.innerText = 'Procesando...';
+            loader.classList.remove('hidden');
+
+            // Simulate Network delay (2 seconds)
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Stop Loading
+            loader.classList.add('hidden');
+            btnText.innerText = 'Pagar ahora';
+
+            // Show Success
+            showSuccessToast();
+
+            // Reset App
+            cart = [];
+            document.getElementById('shipping-zone-header').value = "";
+            renderProducts();
+            updateUI({ subtotal: 0, productDiscount: 0, promotionalDiscount: 0, shippingCost: 0, paymentDiscount: 0, total: 0 });
+            validatePaymentButton();
+        }
+
+        function showSuccessToast() {
+            const toast = document.getElementById('success-toast');
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-10');
+            }, 4000);
+        }
+
+        async function calculateCheckout() {
+            const method = document.getElementById('payment-method-select').value;
+            const zone = document.getElementById('shipping-zone-header').value;
+
+            if (cart.length === 0) {
+                updateUI({ subtotal: 0, productDiscount: 0, promotionalDiscount: 0, shippingCost: 0, paymentDiscount: 0, total: 0 });
+                return;
+            }
+
+            const request = {
+                cartId: "web-cart-" + Date.now(),
+                items: cart,
+                shippingAddress: { zoneId: zone },
+                paymentMethod: method
+            };
+
+            const res = await fetch('/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(request)
+            });
+
+            if (!res.ok) {
+                console.error("Checkout failed");
+                return;
+            }
+
+            const data = await res.json();
+            updateUI(data);
+        }
+
+        function updateUI(data) {
+            const itemsCount = cart.reduce((acc, curr) => acc + curr.quantity, 0);
+            document.getElementById('cart-count').innerText = itemsCount;
+            document.getElementById('summary-items-count').innerText = `Productos (${itemsCount})`;
+            document.getElementById('header-total').innerText = data.total.toLocaleString('es-CL');
+
+            document.getElementById('summary-subtotal').innerText = `$${data.subtotal.toLocaleString('es-CL')}`;
+
+            // Product Discount
+            const rowProdDiscount = document.getElementById('row-product-discount');
+            if (data.productDiscount > 0) {
+                rowProdDiscount.classList.remove('hidden');
+                document.getElementById('summary-product-discount').innerText = `-$${data.productDiscount.toLocaleString('es-CL')}`;
+            } else {
+                rowProdDiscount.classList.add('hidden');
+            }
+
+            // Promo Discount
+            const rowPromoDiscount = document.getElementById('row-promo-discount');
+            if (data.promotionalDiscount > 0) {
+                rowPromoDiscount.classList.remove('hidden');
+                document.getElementById('summary-promo-discount').innerText = `-$${data.promotionalDiscount.toLocaleString('es-CL')}`;
+            } else {
+                rowPromoDiscount.classList.add('hidden');
+            }
+
+            // Net Subtotal (Subtotal - Prod Discount - Promo Discount)
+            const netSubtotal = data.subtotal - data.productDiscount - data.promotionalDiscount;
+            document.getElementById('summary-net-subtotal').innerText = `$${netSubtotal.toLocaleString('es-CL')}`;
+
+            // Shipping
+            document.getElementById('summary-shipping').innerText = data.shippingCost === 0 ? "Sin costo" : `$${data.shippingCost.toLocaleString('es-CL')}`;
+
+            // Payment Discount
+            const rowPayDiscount = document.getElementById('row-payment-discount');
+            const select = document.getElementById('payment-method-select');
+            const selectedText = select.options[select.selectedIndex]?.text.split('(')[0] || "";
+
+            if (data.paymentDiscount > 0) {
+                rowPayDiscount.classList.remove('hidden');
+                document.getElementById('payment-type-label').innerText = selectedText;
+                document.getElementById('summary-payment-discount').innerText = `-$${data.paymentDiscount.toLocaleString('es-CL')}`;
+            } else {
+                rowPayDiscount.classList.add('hidden');
+            }
+
+            document.getElementById('summary-total').innerText = `$${data.total.toLocaleString('es-CL')}`;
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
