@@ -1,30 +1,31 @@
 package com.example.checkoutbackend.service;
 
+import com.example.checkoutbackend.model.ShippingZone;
+import com.example.checkoutbackend.repository.ShippingZoneRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ShippingService {
 
+    private final ShippingZoneRepository shippingZoneRepository;
+
     public BigDecimal calculateCost(String zoneId) {
-        if (zoneId == null || zoneId.trim().isEmpty()) return BigDecimal.ZERO;
-        return switch (zoneId.toLowerCase()) {
-            case "zone-1" -> new BigDecimal("10"); // Santiago Centró
-            case "zone-2" -> new BigDecimal("25"); // Ñuñoa / Providencia
-            case "zone-3" -> new BigDecimal("50"); // Las Condes / Barnechea
-            case "zone-4" -> new BigDecimal("100"); // Regiones Cercanas
-            case "zone-5" -> new BigDecimal("150"); // Extremo Norte/Sur
-            default -> BigDecimal.ZERO;
-        };
+        if (zoneId == null) {
+            return BigDecimal.ZERO;
+        }
+        return shippingZoneRepository.findById(zoneId.toLowerCase())
+                .map(ShippingZone::getCost)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid shipping zone: " + zoneId));
     }
 
-    public java.util.Map<String, String> getAvailableZones() {
-        java.util.LinkedHashMap<String, String> zones = new java.util.LinkedHashMap<>();
-        zones.put("zone-1", "Santiago Centro");
-        zones.put("zone-2", "Ñuñoa / Providencia");
-        zones.put("zone-3", "Las Condes / Barnechea");
-        zones.put("zone-4", "Regiones Cercanas");
-        zones.put("zone-5", "Extremo Norte/Sur");
-        return zones;
+    public Map<String, String> getAvailableZones() {
+        return shippingZoneRepository.findAll().stream()
+                .collect(Collectors.toMap(ShippingZone::getId, ShippingZone::getName));
     }
 }

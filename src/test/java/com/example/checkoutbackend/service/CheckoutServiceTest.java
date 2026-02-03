@@ -49,7 +49,7 @@ public class CheckoutServiceTest {
 
     @Test
     void testCheckoutWithPromotionsAndPaymentDiscount() {
-        Product p1 = new Product(1L, "p-001", "Laptop", new BigDecimal("1000.00"), new BigDecimal("20.00"), "Tech"); 
+        Product p1 = new Product(1L, "p-001", "Laptop", new BigDecimal("1000.00"), new BigDecimal("20.00"), "Tech", "http://image.com"); 
         when(productRepository.findBySku("p-001")).thenReturn(Optional.of(p1));
 
         CartItem item = new CartItem();
@@ -79,7 +79,7 @@ public class CheckoutServiceTest {
 
     @Test
     void testCheckoutNoPromotions() {
-        Product p1 = new Product(1L, "p-002", "Mouse", new BigDecimal("50.00"), BigDecimal.ZERO, "Tech");
+        Product p1 = new Product(1L, "p-002", "Mouse", new BigDecimal("50.00"), BigDecimal.ZERO, "Tech", "http://image.com");
         when(productRepository.findBySku("p-002")).thenReturn(Optional.of(p1));
         
         CartItem item = new CartItem();
@@ -103,7 +103,7 @@ public class CheckoutServiceTest {
     }
     @Test
     void testCheckoutWithInactivePromotion() {
-        Product p1 = new Product(1L, "p-001", "Laptop", new BigDecimal("1000.00"), BigDecimal.ZERO, "Tech"); 
+        Product p1 = new Product(1L, "p-001", "Laptop", new BigDecimal("1000.00"), BigDecimal.ZERO, "Tech", "http://image.com"); 
         when(productRepository.findBySku("p-001")).thenReturn(Optional.of(p1));
 
         CartItem item = new CartItem();
@@ -139,7 +139,7 @@ public class CheckoutServiceTest {
 
     @Test
     void testInvalidPaymentMethodThrowsException() {
-        Product p1 = new Product(1L, "p-001", "Laptop", new BigDecimal("1000.00"), BigDecimal.ZERO, "Tech"); 
+        Product p1 = new Product(1L, "p-001", "Laptop", new BigDecimal("1000.00"), BigDecimal.ZERO, "Tech", "http://image.com"); 
         when(productRepository.findBySku("p-001")).thenReturn(Optional.of(p1));
 
         CartItem item = new CartItem();

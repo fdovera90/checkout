@@ -23,6 +23,7 @@ public class Product {
     private BigDecimal price;
     private BigDecimal discount;
     private String category;
+    private String imageUrl;
 }
 
 

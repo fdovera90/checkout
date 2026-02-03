@@ -9,7 +9,7 @@ El sistema calcula descuentos configurables, costos de envío dinámicos y valid
 - **Descuentos por producto**: Configurables como porcentaje en base de datos
 - **Descuentos promocionales**: Sistema extensible usando Strategy Pattern
 - **Descuentos por método de pago**: Configurables por tipo de pago (efectivo, débito, crédito)
-- **Cálculo de envío**: Basado en zona geográfica
+- **Cálculo de envío**: Basado en zonas geográficas gestionadas dinámicamente desde la base de datos
 - **Validación de métodos de pago**: Enum type-safe con validación en runtime
 
 ## Stack Tecnológico
@@ -126,7 +126,7 @@ Obtiene el catálogo completo de productos con sus precios y descuentos base. Us
 Retorna la lista de métodos de pago disponibles (Efectivo, Débito, Crédito) junto con sus porcentajes de descuento. Permite que el selector del checkout sea dinámico.
 
 ### 4. GET /shipping-zones
-Retorna el mapa de zonas de envío soportadas. El frontend usa esto para llenar el selector de ubicación en el header.
+Retorna la lista de zonas de envío soportadas directamente desde la base de datos. Cada zona incluye su ID, nombre descriptivo y costo asociado. El frontend usa esto para llenar el selector de ubicación en el header.
 
 ## Métodos de Pago Válidos
 
@@ -147,9 +147,9 @@ La aplicación usa H2 en memoria. Los datos iniciales se cargan desde `src/main/
 
 ### Productos
 ```sql
-INSERT INTO product (id, sku, name, price, discount, category) VALUES
-(1, 'p-001', 'Laptop', 1000.00, 20.00, 'Tech'),
-(2, 'p-010', 'Mouse', 50.00, 0.00, 'Tech');
+INSERT INTO product (id, sku, name, price, discount, category, image_url) VALUES
+(1, 'p-001', 'Laptop', 1000.00, 20.00, 'Tech', 'https://example.com/laptop.jpg'),
+(2, 'p-010', 'Mouse', 50.00, 0.00, 'Tech', 'https://example.com/mouse.jpg');
 ```
 
 ### Métodos de Pago
@@ -157,6 +157,13 @@ INSERT INTO product (id, sku, name, price, discount, category) VALUES
 INSERT INTO payment_method (id, name, type, discount) VALUES
 (1, 'Debit Card', 'DEBIT', 0.10),
 (2, 'Credit Card', 'CREDIT_CARD', 0.05);
+```
+
+### Zonas de Despacho
+```sql
+INSERT INTO shipping_zone (id, name, cost) VALUES 
+('zone-1', 'Santiago Centro', 10.00),
+('zone-2', 'Santiago Periferia', 25.00);
 ```
 
 ### Promociones
@@ -205,7 +212,10 @@ Este proyecto sigue principios de código limpio:
 ```
 src/main/java/com/example/checkoutbackend/
 ├── controller/
-│   └── CheckoutController.java
+│   ├── CheckoutController.java
+│   ├── ProductController.java
+│   ├── PaymentMethodController.java
+│   └── ShippingController.java
 ├── model/
 │   ├── CartItem.java
 │   ├── CheckoutRequest.java
@@ -213,13 +223,15 @@ src/main/java/com/example/checkoutbackend/
 │   ├── PaymentMethod.java
 │   ├── PaymentMethodType.java (Enum)
 │   ├── Product.java
-│   └── ShippingAddress.java
+│   ├── ShippingAddress.java
+│   └── ShippingZone.java
 ├── repository/
 │   ├── PaymentMethodRepository.java
-│   └── ProductRepository.java
+│   ├── ProductRepository.java
+│   └── ShippingZoneRepository.java
 ├── service/
 │   ├── CheckoutService.java
-│   ├── ShippingService.java (Gestión de zonas y costos)
+│   ├── ShippingService.java (Gestión dinámica vía DB)
 │   └── promotion/
 │       ├── PromotionStrategy.java
 │       ├── TenPercentOffStrategy.java
@@ -256,16 +268,47 @@ Total = subtotal
 - **400 Bad Request**: Método de pago inválido, SKU no encontrado, zona de envío inválida
 - **500 Internal Server Error**: Errores inesperados del servidor
 
+## Decisiones de Diseño y Trade-offs
+
+### 1. Extensibilidad vs Simplicidad (Strategy Pattern)
+Se decidió implementar el **Strategy Pattern** para las promociones adicionales. 
+- **Trade-off**: Introduce mayor complejidad inicial y más clases.
+- **Justificación**: En un entorno de retail (como Walmart/Líder), las reglas de negocio cambian semanalmente (CyberDay, 2x1, descuentos por categoría). Este patrón permite agregar nuevas reglas sin tocar el core del `CheckoutService`.
+
+### 2. Base de Datos en Memoria (H2)
+- **Trade-off**: Los datos se pierden al reiniciar el servidor.
+- **Justificación**: Para una evaluación técnica, garantiza que se pueda ejecutar el proyecto con "cero configuración" de dependencias externas (como PostgreSQL o MySQL), centrando la atención en la lógica de negocio.
+
+### 3. Redondeo y Precisión (CLP)
+Se configuró el sistema con redoneo `HALF_UP` y escala 0 (`DECIMAL_SCALE = 0`).
+- **Trade-off**: Se pierde la precisión de centavos.
+- **Justificación**: El sistema está diseñado pensando en el **Peso Chileno (CLP)**, donde no existen decimales en la práctica comercial actual. Esto simplifica la visualización para el usuario final y evita errores de arrastre por flotantes.
+
+### 4. Gestión de Zonas vía Base de Datos
+El sistema gestiona los costos de despacho mediante una tabla dinámica `SHIPPING_ZONE`.
+- **Justificación**: Cumple con estándares de retail donde los costos de despacho varían por promociones de logística, cambios en proveedores de transporte o ajustes tarifarios, permitiendo actualizaciones inmediatas sin requerir cambios en el código fuente ni nuevos despliegues.
+
 ## Desarrollo
 
-### Agregar un nuevo método de pago
+### Agregar un nuevo producto
+Para incluir un producto con imagen y descuento:
+1. Obtener la URL pública de la imagen.
+2. Insertar registro en `data.sql` (tabla `product`):
+   ```sql
+   INSERT INTO product (id, sku, name, price, category, discount, image_url) 
+   VALUES (4, 'p-004', 'Monitor', 200.00, 'Electronics', 10.00, 'https://mi-imagen.com/monitor.jpg');
+   ```
 
-1. Agregar valor al enum `PaymentMethodType`
+### Agregar un nuevo método de pago
+1. Agregar valor al enum `PaymentMethodType` (si es un tipo nuevo)
 2. Insertar registro en `data.sql`
 3. Reiniciar la aplicación
 
-### Agregar una nueva estrategia de promoción
+### Agregar una nueva zona de despacho
+1. Insertar registro en `data.sql` (tabla `shipping_zone`)
+2. Reiniciar la aplicación
 
+### Agregar una nueva estrategia de promoción
 1. Crear clase que implemente `PromotionStrategy`
 2. Inyectar en `CheckoutService`
 3. Configurar lógica de aplicación
