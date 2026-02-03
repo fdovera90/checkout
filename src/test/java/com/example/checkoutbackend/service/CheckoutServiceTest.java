@@ -64,7 +64,7 @@ public class CheckoutServiceTest {
         
         when(shippingService.calculateCost(any())).thenReturn(new BigDecimal("10.00"));
 
-        PaymentMethod pm = new PaymentMethod(1L, "Cash", PaymentMethodType.CASH, new BigDecimal("15.00"));
+        PaymentMethod pm = new PaymentMethod(1L, "Cash", PaymentMethodType.CASH, new BigDecimal("0.15"));
         when(paymentMethodRepository.findByType(PaymentMethodType.CASH)).thenReturn(Optional.of(pm));
 
         CheckoutResult result = checkoutService.processCheckout(items, null, "CASH");

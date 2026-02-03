@@ -165,8 +165,8 @@ INSERT INTO product (id, sku, name, price, discount, category) VALUES
 ### Métodos de Pago
 ```sql
 INSERT INTO payment_method (id, name, type, discount) VALUES
-(2, 'Debit Card', 'DEBIT', 0.10),
-(3, 'Credit Card', 'CREDIT_CARD', 0.05);
+(1, 'Debit Card', 'DEBIT', 0.10),
+(2, 'Credit Card', 'CREDIT_CARD', 0.05);
 ```
 
 ### Promociones

@@ -14,7 +14,7 @@ public class ShippingService {
             case "zone-3" -> new BigDecimal("50"); // Las Condes / Barnechea
             case "zone-4" -> new BigDecimal("100"); // Regiones Cercanas
             case "zone-5" -> new BigDecimal("150"); // Extremo Norte/Sur
-            default -> throw new IllegalArgumentException("Invalid shipping zone: " + zoneId);
+            default -> BigDecimal.ZERO;
         };
     }
 

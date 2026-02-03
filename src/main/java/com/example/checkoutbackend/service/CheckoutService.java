@@ -33,6 +33,8 @@ public class CheckoutService {
         log.debug("Processing checkout for {} items with payment method: {}", (items != null ? items.size() : 0), paymentMethodType);
         BigDecimal subtotal = BigDecimal.ZERO;
         BigDecimal productListDiscount = BigDecimal.ZERO;
+        BigDecimal additionalPromotionDiscount = BigDecimal.ZERO;
+        BigDecimal totalPromotionDiscount = BigDecimal.ZERO;
 
         if (items != null) {
             for (CartItem item : items) {
@@ -50,8 +52,6 @@ public class CheckoutService {
         }
         log.debug("Subtotal: {}, Product list discount: {}", subtotal, productListDiscount);
         
-        BigDecimal additionalPromotionDiscount = BigDecimal.ZERO;
-
         Cart cart = new Cart();
         cart.setItems(items);
 
@@ -64,7 +64,7 @@ public class CheckoutService {
             if (strategy != null) {
                 BigDecimal discount = strategy.calculateDiscount(cart, subtotal, promo)
                         .setScale(DECIMAL_SCALE, RoundingMode.HALF_UP);
-                if (discount.compareTo(BigDecimal.ZERO) > 0) {
+                if (discount != null && discount.compareTo(BigDecimal.ZERO) > 0) {
                     additionalPromotionDiscount = additionalPromotionDiscount.add(discount);
                 }
             }
@@ -72,9 +72,10 @@ public class CheckoutService {
         log.debug("Additional promotion discount: {}", additionalPromotionDiscount);
 
         BigDecimal shippingCost = shippingService.calculateCost(shippingAddress != null ? shippingAddress.getZoneId() : null);
+        if (shippingCost == null) shippingCost = BigDecimal.ZERO;
         log.debug("Shipping cost: {}", shippingCost);
 
-        BigDecimal totalPromotionDiscount = productListDiscount.add(additionalPromotionDiscount);
+        totalPromotionDiscount = productListDiscount.add(additionalPromotionDiscount);
         BigDecimal intermediateTotal = subtotal.subtract(totalPromotionDiscount).add(shippingCost).max(BigDecimal.ZERO);
         
         BigDecimal paymentDiscountPercent = BigDecimal.ZERO;
