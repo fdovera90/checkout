@@ -16,7 +16,7 @@ public class ShippingService {
     private final ShippingZoneRepository shippingZoneRepository;
 
     public BigDecimal calculateCost(String zoneId) {
-        if (zoneId == null) {
+        if (zoneId == null || zoneId.trim().isEmpty()) {
             return BigDecimal.ZERO;
         }
         return shippingZoneRepository.findById(zoneId.toLowerCase())
