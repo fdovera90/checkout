@@ -1,6 +1,8 @@
-# Checkout
+# Checkout System
 
-Sistema de checkout con descuentos configurables, cálculo de envío y validación de métodos de pago.
+Este proyecto es una implementación de un sistema de checkout robusto diseñado para cumplir con los requerimientos técnicos de la evaluación para **Walmart**.
+
+El sistema calcula descuentos configurables, costos de envío dinámicos y valida métodos de pago, siguiendo patrones de diseño como **Strategy** y **Factory**, asegurando un código limpio y extensible.
 
 ## Características
 
@@ -29,7 +31,17 @@ Sistema de checkout con descuentos configurables, cálculo de envío y validaci�
 
 Siga estos pasos para levantar el proyecto sin necesidad de configuraciones adicionales:
 
-### 1. Ejecución con Maven Wrapper
+### Ejecución con Docker (Recomendado)
+
+Si tiene Docker instalado, puede levantar el proyecto completo (backend + frontend) con un solo comando:
+
+```powershell
+docker-compose up --build
+```
+
+Esto descargará las imágenes necesarias, compilará el proyecto y lo dejará listo en el puerto **8080**.
+
+### 1. Ejecución con Maven Wrapper (Manual)
 
 No es necesario tener Maven instalado de forma global, el proyecto incluye un "wrapper".
 
