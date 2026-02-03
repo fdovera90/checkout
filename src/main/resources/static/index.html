@@ -237,7 +237,7 @@
                 return `
                 <div class="bg-white p-5 rounded-2xl shadow-sm border hover:shadow-xl transition duration-300 flex flex-col h-full group">
                     <div class="w-full h-40 bg-gray-100 rounded-xl mb-4 flex items-center justify-center overflow-hidden">
-                        <img src="/images/${p.sku}.png" alt="${p.name}" class="group-hover:scale-110 transition duration-500 object-contain h-full w-full" onerror="this.src='https://via.placeholder.com/200x150?text=${p.name}'">
+                        <img src="${p.imageUrl}" alt="${p.name}" class="group-hover:scale-110 transition duration-500 object-contain h-full w-full" onerror="this.src='https://via.placeholder.com/200x150?text=${p.name}'">
                     </div>
                     <div class="flex-grow">
                         <span class="bg-gray-100 text-gray-400 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">${p.category}</span>

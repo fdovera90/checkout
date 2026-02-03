@@ -5,7 +5,7 @@ INSERT INTO product (id, sku, name, price, category, discount, image_url) VALUES
 INSERT INTO payment_method (id, name, type, discount) VALUES (1, 'Debit Card', 'DEBIT', 0.10);
 INSERT INTO payment_method (id, name, type, discount) VALUES (2, 'Credit Card', 'CREDIT_CARD', 0.05);
 
-INSERT INTO promotion (id, name, strategy_type, config_value, active) VALUES (1, 'Global Summer Sale', 'TEN_PERCENT_OFF', 10.00, 'S');
+INSERT INTO promotion (id, name, strategy_type, config_value, active) VALUES (1, 'Global Summer Sale', 'TEN_PERCENT_OFF', 10.00, 'N');
 
 INSERT INTO shipping_zone (id, name, cost) VALUES ('zone-1', 'Santiago Centro', 10.00);
 INSERT INTO shipping_zone (id, name, cost) VALUES ('zone-2', 'Santiago Periferia', 25.00);
